@@ -45,6 +45,26 @@
             <div id="msg"></div>
         </div>
 
-        <script type="py" src="pyscr.py"></script>
+        <script type="py">
+from js import document
+from time import sleep as delay
+
+msg = document.getElementById("msg")
+
+msg.innerHTML += """<div><h2>3...</h2>"""
+delay(1)
+msg.innerHTML += """<h2>2...</h2>"""
+delay(1)
+msg.innerHTML += """<h2>1...</h2></div>"""
+delay(1)
+msg.innerHTML = """ """
+
+msg.innerHTML += """
+    <div style="margin-top: 20px; padding: 15px; background: #ff6b6b; border-radius: 10px; color: white;">
+        <h2 style="margin: 0;">💖 Люблю тебя, мамочка! 💖</h2>
+        <p style="margin: 10px 0 0;">Ты самая лучшая!</p>
+    </div>
+"""
+        </script>
     </body>
 </html>

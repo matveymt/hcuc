@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Russia — Путешествия по России</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --primary: #1e3a8a;
+    --accent: #dc2626;
+    --gold: #f59e0b;
+    --light: #f8fafc;
+    --dark: #0f172a;
+    --gray: #64748b;
+    --card-bg: #ffffff;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+  }
+
+  .nav {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .lang-switcher {
+    display: flex;
+    gap: 6px;
+    background: var(--light);
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .lang-btn {
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--gray);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lang-btn:hover { background: rgba(30,58,138,0.08); color: var(--primary); }
+  .lang-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(30,58,138,0.3);
+  }
+
+  .flag { font-size: 16px; }
+
+  /* Hero */
+  .hero {
+    height: 100vh;
+    min-height: 600px;
+    background: linear-gradient(rgba(15,23,42,0.55), rgba(30,58,138,0.7)),
+      url('https://images.unsplash.com/photo-1513326738677-b964603b136d?w=1920&q=80') center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 100px 24px 40px;
+    position: relative;
+  }
+
+  .hero-content { max-width: 900px; animation: fadeUp 1s ease; }
+
+  .hero h1 {
+    font-size: clamp(38px, 6vw, 76px);
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 22px);
+    margin-bottom: 36px;
+    opacity: 0.95;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 15px 34px;
+    border-radius: 50px;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 10px 30px rgba(220,38,38,0.4);
+  }
+
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(220,38,38,0.5); }
+
+  .btn-outline {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-outline:hover { background: rgba(255,255,255,0.25); transform: translateY(-3px); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    font-size: 24px;
+    opacity: 0.7;
+  }
+
+  /* Section */
+  section { padding: 90px 24px; }
+
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: var(--dark);
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: var(--gray);
+    font-size: 17px;
+    max-width: 620px;
+    margin: 0 auto 50px;
+  }
+
+  /* Cities grid */
+  .cities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 26px;
+  }
+
+  .city-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.06);
+    transition: all 0.35s cubic-bezier(.2,.8,.2,1);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .city-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(15,23,42,0.15);
+  }
+
+  .city-img {
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .city-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent 60%);
+  }
+
+  .city-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,0.95);
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    z-index: 2;
+  }
+
+  .city-name-overlay {
+    position: absolute;
+    bottom: 14px;
+    left: 18px;
+    color: white;
+    font-size: 24px;
+    font-weight: 800;
+    z-index: 2;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .city-body { padding: 22px; }
+
+  .city-desc {
+    color: var(--gray);
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .city-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--gray);
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .city-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* Features */
+  .features {
+    background: linear-gradient(135deg, var(--primary), #1e40af);
+    color: white;
+  }
+
+  .features .section-title { color: white; }
+  .features .section-subtitle { color: rgba(255,255,255,0.8); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.1);
+    padding: 30px 24px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+
+  .feature-card:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-5px);
+  }
+
+  .feature-icon { font-size: 40px; margin-bottom: 14px; }
+  .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; opacity: 0.85; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.8);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: fadeIn 0.3s;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 22px;
+    max-width: 780px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: scaleIn 0.35s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .modal-img {
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
+  .modal-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 70%);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: var(--accent); color: white; transform: rotate(90deg); }
+
+  .modal-title {
+    position: absolute;
+    bottom: 20px;
+    left: 26px;
+    color: white;
+    font-size: 32px;
+    font-weight: 800;
+    z-index: 2;
+  }
+
+  .modal-body { padding: 30px; }
+
+  .modal-body h4 {
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    margin: 22px 0 10px;
+  }
+
+  .modal-body p { color: var(--gray); margin-bottom: 12px; }
+
+  .modal-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .highlight-tag {
+    background: #eff6ff;
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--dark);
+    color: rgba(255,255,255,0.7);
+    padding: 50px 24px 30px;
+    text-align: center;
+  }
+
+  footer .logo { justify-content: center; color: white; margin-bottom: 16px; }
+  footer p { font-size: 14px; margin-bottom: 8px; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes bounce {
+    0%,100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, 10px); }
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav { flex-direction: column; gap: 12px; padding: 12px 16px; }
+    .lang-btn { padding: 6px 10px; font-size: 12px; }
+    .lang-btn .flag { font-size: 14px; }
+    section { padding: 60px 16px; }
+    .city-name-overlay { font-size: 20px; }
+    .modal-title { font-size: 24px; }
+    .modal-body { padding: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#" class="logo">
+      <div class="logo-icon">🌍</div>
+      <span id="logo-text">Открой Россию</span>
+    </a>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="ru"><span class="flag">🇷🇺</span>RU</button>
+      <button class="lang-btn" data-lang="en"><span class="flag">🇬🇧</span>EN</button>
+      <button class="lang-btn" data-lang="zh"><span class="flag">🇨🇳</span>中文</button>
+      <button class="lang-btn" data-lang="es"><span class="flag">🇪🇸</span>ES</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-content">
+    <h1 id="hero-title"></h1>
+    <p id="hero-subtitle"></p>
+    <div class="hero-buttons">
+      <a href="#cities" class="btn btn-primary" id="hero-btn1"></a>
+      <a href="#features" class="btn btn-outline" id="hero-btn2"></a>
+    </div>
+  </div>
+  <div class="scroll-hint">↓</div>
+</div>
+
+<!-- Cities -->
+<section id="cities">
+  <div class="container">
+    <h2 class="section-title" id="cities-title"></h2>
+    <p class="section-subtitle" id="cities-subtitle"></p>
+    <div class="cities-grid" id="cities-grid"></div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title" id="features-title"></h2>
+    <p class="section-subtitle" id="features-subtitle"></p>
+    <div class="features-grid" id="features-grid"></div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-img" id="modal-img">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title" id="modal-title"></div>
+    </div>
+    <div class="modal-body">
+      <p id="modal-desc"></p>
+      <h4 id="modal-h1"></h4>
+      <div class="modal-highlights" id="modal-highlights"></div>
+      <h4 id="modal-h2"></h4>
+      <p id="modal-season"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="logo"><div class="logo-icon">🌍</div><span id="footer-logo"></span></div>
+  <p id="footer-text"></p>
+  <p style="opacity:0.5; margin-top:16px;">© 2025 Discover Russia</p>
+</footer>
+
+<script>
+const translations = {
+  ru: {
+    logo: "Открой Россию",
+    heroTitle: 'Путешествуй по <span>России</span>',
+    heroSubtitle: 'Открой для себя величайшую страну мира: древние города, горные вершины, сибирскую тайгу и золотые купола.',
+    heroBtn1: '🏙 Все города',
+    heroBtn2: '✨ Узнать больше',
+    citiesTitle: 'Города России',
+    citiesSubtitle: 'Каждый город — это отдельная вселенная со своей историей, культурой и характером.',
+    featuresTitle: 'Почему стоит поехать',
+    featuresSubtitle: 'Россия — это страна контрастов и открытий в любое время года',
+    footerText: 'Исследуй Россию — 11 часовых поясов, 85 регионов, тысячи чудес.',
+    h1: 'Достопримечательности',
+    h2: 'Лучшее время для посещения',
+    readMore: 'Подробнее →',
+    features: [
+      { icon: '🏛️', title: 'Богатая история', text: 'Более 1000 лет истории, кремли, монастыри и дворцы.' },
+      { icon: '🏔️', title: 'Природа', text: 'От Байкала до Эльбруса — уникальные природные ландшафты.' },
+      { icon: '🎭', title: 'Культура', text: 'Балет, театры, музеи мирового уровня и гостеприимство.' },
+      { icon: '🍽️', title: 'Кухня', text: 'От сибирских пельменей до кавказских блюд и морепродуктов.' }
+    ],
+    cities: [
+      {
+        name: 'Москва', region: 'Столица России', hours: 'UTC+3', pop: '13 млн',
+        img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=800&q=80',
+        desc: 'Столица, деловой и культурный центр страны, где древность встречается с современностью.',
+        long: 'Москва — крупнейший город Европы и столица России. Здесь находятся Красная площадь, Кремль, Третьяковская галерея и более 400 музеев. Город поражает контрастом между историческими соборами и небоскрёбами Москва-Сити.',
+        highlights: ['Красная площадь', 'Московский Кремль', 'Третьяковка', 'Москва-Сити', 'ВДНХ', 'Метро'],
+        season: 'Лучшее время — май-сентябрь и декабрь (новогодние ярмарки). Зимой красиво, но холодно (-10°C).'
+      },
+      {
+        name: 'Санкт-Петербург', region: 'Северная столица', hours: 'UTC+3', pop: '5.6 млн',
+        img: 'https://images.unsplash.com/photo-1556610961-2fecc5927171?w=800&q=80',
+        desc: 'Культурная столица России с Эрмитажем, разводными мостами и белыми ночами.',
+        long: 'Санкт-Петербург — город на Неве, основанный Петром I в 1703 году. Известен Эрмитажем, Петропавловской крепостью, дворцами и каналами. Летом здесь белые ночи, а зимой — сказочная атмосфера.',
+        highlights: ['Эрмитаж', 'Петропавловская крепость', 'Петергоф', 'Разводные мосты', 'Невский проспект', 'Белые ночи'],
+        season: 'Идеально в июне (белые ночи) и сентябре. Зимой холодно и сыро, но красиво.'
+      },
+      {
+        name: 'Казань', region: 'Татарстан', hours: 'UTC+3', pop: '1.3 млн',
+        img: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
+        desc: 'Столица Татарстана — символ единства культур и религий Востока и Запада.',
+        long: 'Казань — один из древнейших городов России, столица Татарстана. Здесь мирно соседствуют Казанский кремль, мечеть Кул-Шариф и православные храмы. Город известен как «третья столица» России.',
+        highlights: ['Казанский кремль', 'Кул-Шариф', 'Баумана', 'Раифский монастырь', 'Озеро Кабан'],
+        season: 'Май-сентябрь — идеально. Летом тепло (+25°C), много фестивалей.'
+      },
+      {
+        name: 'Сочи', region: 'Краснодарский край', hours: 'UTC+3', pop: '450 тыс.',
+        img: 'https://images.unsplash.com/photo-1578922746465-3a80a228f223?w=800&q=80',
+        desc: 'Главный курорт России: море, горы, субтропики и Олимпийский парк.',
+        long: 'Сочи — крупнейший курортный город России на берегу Чёрного моря. Здесь можно купаться летом и кататься на лыжах зимой. Рядом — Красная Поляна, Роза Хутор и Олимпийский парк.',
+        highlights: ['Красная Поляна', 'Роза Хутор', 'Олимпийский парк', 'Дендрарий', 'Сочи Парк'],
+        season: 'Круглый год: летом море (+28°C), зимой — горнолыжные курорты.'
+      },
+      {
+        name: 'Екатеринбург', region: 'Урал', hours: 'UTC+5', pop: '1.5 млн',
+        img: 'https://images.unsplash.com/photo-1602088541880-88b41f3e03a6?w=800&q=80',
+        desc: 'Столица Урала — город на границе Европы и Азии, центр промышленности и искусства.',
+        long: 'Екатеринбург — четвёртый по величине город России, столица Урала. Известен Храмом на Крови, Ельцин-центром, конструктивистской архитектурой и границей Европа-Азия.',
+        highlights: ['Храм на Крови', 'Ельцин-центр', 'Граница Европа-Азия', 'Дом Севастьянова', 'Уральские горы'],
+        season: 'Июнь-август — лучший период. Зима снежная и холодная.'
+      },
+      {
+        name: 'Владивосток', region: 'Дальний Восток', hours: 'UTC+10', pop: '600 тыс.',
+        img: 'https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=800&q=80',
+        desc: 'Тихоокеанские ворота России, город мостов и морских пейзажей.',
+        long: 'Владивосток — портовый город на побережье Японского моря. Известен Золотым мостом, Русским мостом на остров Русский, маяками и морскими деликатесами. Здесь чувствуется азиатское влияние.',
+        highlights: ['Золотой мост', 'Остров Русский', 'Маяк Токаревского', 'Приморский океанариум', 'Мыс Тобизина'],
+        season: 'Лето (июль-сентябрь) — тёплое море. Осень — «бархатный сезон».'
+      },
+      {
+        name: 'Новосибирск', region: 'Сибирь', hours: 'UTC+7', pop: '1.6 млн',
+        img: 'https://images.unsplash.com/photo-1598284194978-d3b3a22e3de3?w=800&q=80',
+        desc: 'Крупнейший город Сибири, научный и культурный центр за Уралом.',
+        long: 'Новосибирск — третий по численности город России, столица Сибири. Известен Академгородком, Оперным театром (крупнейшим в России), зоопарком и Бугринским мостом.',
+        highlights: ['Академгородок', 'Оперный театр', 'Зоопарк', 'Бугринский мост', 'Часовня Николая'],
+        season: 'Июнь-сентябрь. Зимой — суровые морозы до -30°C.'
+      },
+      {
+        name: 'Калининград', region: 'Балтика', hours: 'UTC+2', pop: '500 тыс.',
+        img: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?w=800&q=80',
+        desc: 'Балтийский эксклав с европейской архитектурой и янтарными пляжами.',
+        long: 'Калининград — бывший Кёнигсберг, родина философа Канта. Известен Кафедральным собором, Куршской косой, янтарными пляжами и уникальной немецкой архитектурой.',
+        highlights: ['Куршская коса', 'Кафедральный собор', 'Янтарный музей', 'Дом Советов', 'Балтийское море'],
+        season: 'Июнь-август — тёплое Балтийское море и пляжи.'
+      }
+    ]
+  },
+  en: {
+    logo: "Discover Russia",
+    heroTitle: 'Travel across <span>Russia</span>',
+    heroSubtitle: 'Discover the greatest country in the world: ancient cities, mountain peaks, Siberian taiga and golden domes.',
+    heroBtn1: '🏙 All Cities',
+    heroBtn2: '✨ Learn More',
+    citiesTitle: 'Cities of Russia',
+    citiesSubtitle: 'Every city is a separate universe with its own history, culture and character.',
+    featuresTitle: 'Why You Should Visit',
+    featuresSubtitle: 'Russia is a country of contrasts and discoveries in any season',
+    footerText: 'Explore Russia — 11 time zones, 85 regions, thousands of wonders.',
+    h1: 'Attractions',
+    h2: 'Best Time to Visit',
+    readMore: 'Read more →',
+    features: [
+      { icon: '🏛️', title: 'Rich History', text: 'Over 1000 years of history, kremlins, monasteries and palaces.' },
+      { icon: '🏔️', title: 'Nature', text: 'From Baikal to Elbrus — unique natural landscapes.' },
+      { icon: '🎭', title: 'Culture', text: 'World-class ballet, theaters, museums and hospitality.' },
+      { icon: '🍽️', title: 'Cuisine', text: 'From Siberian pelmeni to Caucasian dishes and seafood.' }
+    ],
+    cities: [
+      {
+        name: 'Moscow', region: 'Capital of Russia', hours: 'UTC+3', pop: '13M',
+        img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=800&q=80',
+        desc: 'The capital, business and cultural center where antiquity meets modernity.',
+        long: 'Moscow is the largest city in Europe and the capital of Russia. Red Square, the Kremlin, the Tretyakov Gallery and over 400 museums are located here. The city amazes with contrast between historic cathedrals and Moscow City skyscrapers.',
+        highlights: ['Red Square', 'Moscow Kremlin', 'Tretyakov Gallery', 'Moscow City', 'VDNKh', 'Metro'],
+        season: 'Best time — May to September and December (New Year fairs). Winter is beautiful but cold (-10°C).'
+      },
+      {
+        name: 'St. Petersburg', region: 'Northern Capital', hours: 'UTC+3', pop: '5.6M',
+        img: 'https://images.unsplash.com/photo-1556610961-2fecc5927171?w=800&q=80',
+        desc: 'The cultural capital of Russia with the Hermitage, drawbridges and white nights.',
+        long: 'St. Petersburg is a city on the Neva, founded by Peter the Great in 1703. Known for the Hermitage, Peter and Paul Fortress, palaces and canals. In summer there are white nights, in winter — a fairytale atmosphere.',
+        highlights: ['Hermitage', 'Peter and Paul Fortress', 'Peterhof', 'Drawbridges', 'Nevsky Prospekt', 'White Nights'],
+        season: 'Perfect in June (white nights) and September. Winter is cold and damp but beautiful.'
+      },
+      {
+        name: 'Kazan', region: 'Tatarstan', hours: 'UTC+3', pop: '1.3M',
+        img: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
+        desc: 'Capital of Tatarstan — a symbol of unity between Eastern and Western cultures.',
+        long: 'Kazan is one of the oldest cities of Russia, capital of Tatarstan. The Kazan Kremlin, Kul Sharif Mosque and Orthodox churches peacefully coexist here. The city is known as the "third capital" of Russia.',
+        highlights: ['Kazan Kremlin', 'Kul Sharif', 'Bauman Street', 'Raifa Monastery', 'Kaban Lake'],
+        season: 'May-September is ideal. Summer is warm (+25°C), many festivals.'
+      },
+      {
+        name: 'Sochi', region: 'Krasnodar Krai', hours: 'UTC+3', pop: '450K',
+        img: 'https://images.unsplash.com/photo-1578922746465-3a80a228f223?w=800&q=80',
+        desc: 'The main resort of Russia: sea, mountains, subtropics and Olympic Park.',
+        long: 'Sochi is the largest resort city in Russia on the Black Sea coast. You can swim in summer and ski in winter. Nearby are Krasnaya Polyana, Rosa Khutor and the Olympic Park.',
+        highlights: ['Krasnaya Polyana', 'Rosa Khutor', 'Olympic Park', 'Arboretum', 'Sochi Park'],
+        season: 'Year-round: summer sea (+28°C), winter — ski resorts.'
+      },
+      {
+        name: 'Yekaterinburg', region: 'Ural', hours: 'UTC+5', pop: '1.5M',
+        img: 'https://images.unsplash.com/photo-1602088541880-88b41f3e03a6?w=800&q=80',
+        desc: 'Capital of the Urals — a city on the border of Europe and Asia.',
+        long: 'Yekaterinburg is the fourth largest city in Russia, capital of the Urals. Known for the Church on the Blood, Yeltsin Center, constructivist architecture and the Europe-Asia border.',
+        highlights: ['Church on the Blood', 'Yeltsin Center', 'Europe-Asia Border', 'Sevastyanov House', 'Ural Mountains'],
+        season: 'June-August is best. Winter is snowy and cold.'
+      },
+      {
+        name: 'Vladivostok', region: 'Far East', hours: 'UTC+10', pop: '600K',
+        img: 'https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=800&q=80',
+        desc: 'Russia\'s Pacific gateway, a city of bridges and seascapes.',
+        long: 'Vladivostok is a port city on the Sea of Japan. Known for the Golden Bridge, Russky Bridge to Russky Island, lighthouses and seafood. There is a noticeable Asian influence.',
+        highlights: ['Golden Bridge', 'Russky Island', 'Tokarevsky Lighthouse', 'Primorsky Aquarium', 'Cape Tobizina'],
+        season: 'Summer (July-September) — warm sea. Autumn — "velvet season".'
+      },
+      {
+        name: 'Novosibirsk', region: 'Siberia', hours: 'UTC+7', pop: '1.6M',
+        img: 'https://images.unsplash.com/photo-1598284194978-d3b3a22e3de3?w=800&q=80',
+        desc: 'The largest city in Siberia, scientific and cultural center beyond the Urals.',
+        long: 'Novosibirsk is the third most populous city in Russia, capital of Siberia. Known for Akademgorodok, the Opera Theater (largest in Russia), the zoo and Bugrinsky Bridge.',
+        highlights: ['Akademgorodok', 'Opera Theater', 'Zoo', 'Bugrinsky Bridge', 'St. Nicholas Chapel'],
+        season: 'June-September. Winter — severe frosts down to -30°C.'
+      },
+      {
+        name: 'Kaliningrad', region: 'Baltic', hours: 'UTC+2', pop: '500K',
+        img: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?w=800&q=80',
+        desc: 'Baltic exclave with European architecture and amber beaches.',
+        long: 'Kaliningrad is the former Königsberg, birthplace of philosopher Kant. Known for the Cathedral, Curonian Spit, amber beaches and unique German architecture.',
+        highlights: ['Curonian Spit', 'Cathedral', 'Amber Museum', 'House of Soviets', 'Baltic Sea'],
+        season: 'June-August — warm Baltic Sea and beaches.'
+      }
+    ]
+  },
+  zh: {
+    logo: "发现俄罗斯",
+    heroTitle: '畅游<span>俄罗斯</span>',
+    heroSubtitle: '探索世界上最伟大的国家：古老的城市、巍峨的山峰、西伯利亚针叶林和金色穹顶。',
+    heroBtn1: '🏙 所有城市',
+    heroBtn2: '✨ 了解更多',
+    citiesTitle: '俄罗斯城市',
+    citiesSubtitle: '每座城市都是一个独立的宇宙，拥有自己的历史、文化和性格。',
+    featuresTitle: '为什么要去',
+    featuresSubtitle: '俄罗斯是一个四季都充满对比和发现的国家',
+    footerText: '探索俄罗斯——11个时区、85个地区、数千个奇迹。',
+    h1: '名胜古迹',
+    h2: '最佳旅游时间',
+    readMore: '了解更多 →',
+    features: [
+      { icon: '🏛️', title: '悠久历史', text: '千年历史，克里姆林宫、修道院和宫殿。' },
+      { icon: '🏔️', title: '自然风光', text: '从贝加尔湖到厄尔布鲁士山——独特的自然景观。' },
+      { icon: '🎭', title: '文化', text: '世界级芭蕾舞、剧院、博物馆和热情好客。' },
+      { icon: '🍽️', title: '美食', text: '从西伯利亚饺子到高加索菜肴和海鲜。' }
+    ],
+    cities: [
+      {
+        name: '莫斯科', region: '俄罗斯首都', hours: 'UTC+3', pop: '1300万',
+        img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=800&q=80',
+        desc: '首都，商业和文化中心，古老与现代在此交汇。',
+        long: '莫斯科是欧洲最大的城市，也是俄罗斯的首都。这里有红场、克里姆林宫、特列季亚科夫画廊和400多家博物馆。这座城市以历史大教堂和莫斯科城摩天大楼之间的对比而令人惊叹。',
+        highlights: ['红场', '克里姆林宫', '特列季亚科夫画廊', '莫斯科城', '全俄展览中心', '地铁'],
+        season: '最佳时间——5月至9月和12月（新年集市）。冬天美丽但寒冷（-10°C）。'
+      },
+      {
+        name: '圣彼得堡', region: '北方首都', hours: 'UTC+3', pop: '560万',
+        img: 'https://images.unsplash.com/photo-1556610961-2fecc5927171?w=800&q=80',
+        desc: '俄罗斯文化之都，拥有艾尔米塔什博物馆、开桥和白夜。',
+        long: '圣彼得堡是涅瓦河畔的城市，由彼得大帝于1703年建立。以艾尔米塔什博物馆、彼得保罗要塞、宫殿和运河而闻名。夏天有白夜，冬天有童话般的氛围。',
+        highlights: ['艾尔米塔什博物馆', '彼得保罗要塞', '彼得霍夫宫', '开桥', '涅瓦大街', '白夜'],
+        season: '6月（白夜）和9月最理想。冬天寒冷潮湿但美丽。'
+      },
+      {
+        name: '喀山', region: '鞑靼斯坦', hours: 'UTC+3', pop: '130万',
+        img: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
+        desc: '鞑靼斯坦首府——东西方文化融合的象征。',
+        long: '喀山是俄罗斯最古老的城市之一，鞑靼斯坦的首府。喀山克里姆林宫、库尔谢里夫清真寺和东正教教堂在此和平共处。这座城市被称为俄罗斯的"第三首都"。',
+        highlights: ['喀山克里姆林宫', '库尔谢里夫清真寺', '鲍曼街', '拉伊法修道院', '卡班湖'],
+        season: '5月至9月最理想。夏天温暖（+25°C），节日众多。'
+      },
+      {
+        name: '索契', region: '克拉斯诺达尔边疆区', hours: 'UTC+3', pop: '45万',
+        img: 'https://images.unsplash.com/photo-1578922746465-3a80a228f223?w=800&q=80',
+        desc: '俄罗斯主要度假胜地：大海、高山、亚热带和奥林匹克公园。',
+        long: '索契是俄罗斯黑海沿岸最大的度假城市。夏天可以游泳，冬天可以滑雪。附近有红波利亚纳、罗萨胡托尔和奥林匹克公园。',
+        highlights: ['红波利亚纳', '罗萨胡托尔', '奥林匹克公园', '植物园', '索契公园'],
+        season: '全年皆宜：夏天海水（+28°C），冬天——滑雪胜地。'
+      },
+      {
+        name: '叶卡捷琳堡', region: '乌拉尔', hours: 'UTC+5', pop: '150万',
+        img: 'https://images.unsplash.com/photo-1602088541880-88b41f3e03a6?w=800&q=80',
+        desc: '乌拉尔首府——位于欧亚边界的城市。',
+        long: '叶卡捷琳堡是俄罗斯第四大城市，乌拉尔的首府。以滴血教堂、叶利钦中心、构成主义建筑和欧亚边界而闻名。',
+        highlights: ['滴血教堂', '叶利钦中心', '欧亚边界', '谢瓦斯季亚诺夫宅邸', '乌拉尔山脉'],
+        season: '6月至8月最佳。冬天多雪且寒冷。'
+      },
+      {
+        name: '符拉迪沃斯托克', region: '远东', hours: 'UTC+10', pop: '60万',
+        img: 'https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=800&q=80',
+        desc: '俄罗斯的太平洋门户，桥梁和海景之城。',
+        long: '符拉迪沃斯托克是日本海沿岸的港口城市。以金角湾大桥、通往俄罗斯岛的俄罗斯大桥、灯塔和海鲜而闻名。这里能感受到亚洲的影响。',
+        highlights: ['金角湾大桥', '俄罗斯岛', '托卡列夫斯基灯塔', '滨海海洋馆', '托比津纳海角'],
+        season: '夏季（7月至9月）——温暖的海水。秋季——"天鹅绒季节"。'
+      },
+      {
+        name: '新西伯利亚', region: '西伯利亚', hours: 'UTC+7', pop: '160万',
+        img: 'https://images.unsplash.com/photo-1598284194978-d3b3a22e3de3?w=800&q=80',
+        desc: '西伯利亚最大的城市，乌拉尔以东的科学文化中心。',
+        long: '新西伯利亚是俄罗斯人口第三大城市，西伯利亚的首府。以科学城、歌剧舞剧院（俄罗斯最大）、动物园和布格林斯基桥而闻名。',
+        highlights: ['科学城', '歌剧舞剧院', '动物园', '布格林斯基桥', '圣尼古拉礼拜堂'],
+        season: '6月至9月。冬天——严寒低至-30°C。'
+      },
+      {
+        name: '加里宁格勒', region: '波罗的海', hours: 'UTC+2', pop: '50万',
+        img: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?w=800&q=80',
+        desc: '拥有欧洲建筑和琥珀海滩的波罗的海飞地。',
+        long: '加里宁格勒是前柯尼斯堡，哲学家康德的故乡。以主教座堂、库尔斯沙嘴、琥珀海滩和独特的德国建筑而闻名。',
+        highlights: ['库尔斯沙嘴', '主教座堂', '琥珀博物馆', '苏维埃之家', '波罗的海'],
+        season: '6月至8月——温暖的波罗的海和海滩。'
+      }
+    ]
+  },
+  es: {
+    logo: "Descubre Rusia",
+    heroTitle: 'Viaja por <span>Rusia</span>',
+    heroSubtitle: 'Descubre el país más grande del mundo: ciudades antiguas, picos montañosos, la taiga siberiana y cúpulas doradas.',
+    heroBtn1: '🏙 Todas las Ciudades',
+    heroBtn2: '✨ Saber Más',
+    citiesTitle: 'Ciudades de Rusia',
+    citiesSubtitle: 'Cada ciudad es un universo aparte con su propia historia, cultura y carácter.',
+    featuresTitle: 'Por Qué Visitarla',
+    featuresSubtitle: 'Rusia es un país de contrastes y descubrimientos en cualquier estación',
+    footerText: 'Explora Rusia — 11 husos horarios, 85 regiones, miles de maravillas.',
+    h1: 'Atracciones',
+    h2: 'Mejor Época para Visitar',
+    readMore: 'Leer más →',
+    features: [
+      { icon: '🏛️', title: 'Rica Historia', text: 'Más de 1000 años de historia, kremlins, monasterios y palacios.' },
+      { icon: '🏔️', title: 'Naturaleza', text: 'Desde el Baikal hasta el Elbrús — paisajes únicos.' },
+      { icon: '🎭', title: 'Cultura', text: 'Ballet, teatros, museos de clase mundial y hospitalidad.' },
+      { icon: '🍽️', title: 'Cocina', text: 'Desde pelmeni siberianos hasta platos del Cáucaso y mariscos.' }
+    ],
+    cities: [
+      {
+        name: 'Moscú', region: 'Capital de Rusia', hours: 'UTC+3', pop: '13M',
+        img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=800&q=80',
+        desc: 'La capital, centro de negocios y cultura donde la antigüedad se encuentra con la modernidad.',
+        long: 'Moscú es la ciudad más grande de Europa y capital de Rusia. Aquí se encuentran la Plaza Roja, el Kremlin, la Galería Tretiakov y más de 400 museos. La ciudad asombra por el contraste entre catedrales históricas y rascacielos de Moscow City.',
+        highlights: ['Plaza Roja', 'Kremlin de Moscú', 'Galería Tretiakov', 'Moscow City', 'VDNKh', 'Metro'],
+        season: 'Mejor época: mayo a septiembre y diciembre (ferias de Año Nuevo). El invierno es hermoso pero frío (-10°C).'
+      },
+      {
+        name: 'San Petersburgo', region: 'Capital del Norte', hours: 'UTC+3', pop: '5.6M',
+        img: 'https://images.unsplash.com/photo-1556610961-2fecc5927171?w=800&q=80',
+        desc: 'La capital cultural de Rusia con el Hermitage, puentes levadizos y noches blancas.',
+        long: 'San Petersburgo es una ciudad sobre el Neva, fundada por Pedro el Grande en 1703. Famosa por el Hermitage, la Fortaleza de Pedro y Pablo, palacios y canales. En verano hay noches blancas, en invierno — una atmósfera de cuento de hadas.',
+        highlights: ['Hermitage', 'Fortaleza de Pedro y Pablo', 'Peterhof', 'Puentes levadizos', 'Nevsky Prospekt', 'Noches blancas'],
+        season: 'Perfecto en junio (noches blancas) y septiembre. El invierno es frío y húmedo pero hermoso.'
+      },
+      {
+        name: 'Kazán', region: 'Tartaristán', hours: 'UTC+3', pop: '1.3M',
+        img: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=800&q=80',
+        desc: 'Capital de Tartaristán — símbolo de la unidad entre culturas orientales y occidentales.',
+        long: 'Kazán es una de las ciudades más antiguas de Rusia, capital de Tartaristán. El Kremlin de Kazán, la mezquita Kul Sharif y las iglesias ortodoxas coexisten pacíficamente aquí. La ciudad es conocida como la "tercera capital" de Rusia.',
+        highlights: ['Kremlin de Kazán', 'Kul Sharif', 'Calle Bauman', 'Monasterio Raifa', 'Lago Kaban'],
+        season: 'Mayo-septiembre es ideal. El verano es cálido (+25°C), muchos festivales.'
+      },
+      {
+        name: 'Sochi', region: 'Krasnodar', hours: 'UTC+3', pop: '450K',
+        img: 'https://images.unsplash.com/photo-1578922746465-3a80a228f223?w=800&q=80',
+        desc: 'El principal balneario de Rusia: mar, montañas, subtrópicos y Parque Olímpico.',
+        long: 'Sochi es la ciudad turística más grande de Rusia en la costa del Mar Negro. Puedes nadar en verano y esquiar en invierno. Cerca están Krasnaya Polyana, Rosa Khutor y el Parque Olímpico.',
+        highlights: ['Krasnaya Polyana', 'Rosa Khutor', 'Parque Olímpico', 'Arboreto', 'Sochi Park'],
+        season: 'Todo el año: mar en verano (+28°C), invierno — estaciones de esquí.'
+      },
+      {
+        name: 'Ekaterimburgo', region: 'Urales', hours: 'UTC+5', pop: '1.5M',
+        img: 'https://images.unsplash.com/photo-1602088541880-88b41f3e03a6?w=800&q=80',
+        desc: 'Capital de los Urales — ciudad en la frontera entre Europa y Asia.',
+        long: 'Ekaterimburgo es la cuarta ciudad más grande de Rusia, capital de los Urales. Famosa por la Iglesia sobre la Sangre, el Centro Yeltsin, la arquitectura constructivista y la frontera Europa-Asia.',
+        highlights: ['Iglesia sobre la Sangre', 'Centro Yeltsin', 'Frontera Europa-Asia', 'Casa Sevastyanov', 'Montes Urales'],
+        season: 'Junio-agosto es lo mejor. El invierno es nevado y frío.'
+      },
+      {
+        name: 'Vladivostok', region: 'Lejano Oriente', hours: 'UTC+10', pop: '600K',
+        img: 'https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=800&q=80',
+        desc: 'La puerta del Pacífico de Rusia, ciudad de puentes y paisajes marinos.',
+        long: 'Vladivostok es una ciudad portuaria en el Mar de Japón. Famosa por el Puente Dorado, el Puente Russky a la isla Russky, faros y mariscos. Aquí se siente la influencia asiática.',
+        highlights: ['Puente Dorado', 'Isla Russky', 'Faro Tokarevsky', 'Acuario Primorsky', 'Cabo Tobizina'],
+        season: 'Verano (julio-septiembre) — mar cálido. Otoño — "temporada de terciopelo".'
+      },
+      {
+        name: 'Novosibirsk', region: 'Siberia', hours: 'UTC+7', pop: '1.6M',
+        img: 'https://images.unsplash.com/photo-1598284194978-d3b3a22e3de3?w=800&q=80',
+        desc: 'La ciudad más grande de Siberia, centro científico y cultural más allá de los Urales.',
+        long: 'Novosibirsk es la tercera ciudad más poblada de Rusia, capital de Siberia. Famosa por Akademgorodok, el Teatro de Ópera (el más grande de Rusia), el zoológico y el Puente Bugrinsky.',
+        highlights: ['Akademgorodok', 'Teatro de Ópera', 'Zoológico', 'Puente Bugrinsky', 'Capilla de San Nicolás'],
+        season: 'Junio-septiembre. En invierno — heladas severas hasta -30°C.'
+      },
+      {
+        name: 'Kaliningrado', region: 'Báltico', hours: 'UTC+2', pop: '500K',
+        img: 'https://images.unsplash.com/photo-1584646098378-0874589d76b1?w=800&q=80',
+        desc: 'Exclave báltico con arquitectura europea y playas de ámbar.',
+        long: 'Kaliningrado es la antigua Königsberg, cuna del filósofo Kant. Famosa por la Catedral, la Curonian Spit, playas de ámbar y arquitectura alemana única.',
+        highlights: ['Curonian Spit', 'Catedral', 'Museo del Ámbar', 'Casa de los Soviets', 'Mar Báltico'],
+        season: 'Junio-agosto — cálido Mar Báltico y playas.'
+      }
+    ]
+  }
+};
+
+let currentLang = 'ru';
+
+function applyLang(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+
+  document.getElementById('logo-text').textContent = t.logo;
+  document.getElementById('footer-logo').textContent = t.logo;
+  document.getElementById('hero-title').innerHTML = t.heroTitle;
+  document.getElementById('hero-subtitle').textContent = t.heroSubtitle;
+  document.getElementById('hero-btn1').textContent = t.heroBtn1;
+  document.getElementById('hero-btn2').textContent = t.heroBtn2;
+  document.getElementById('cities-title').textContent = t.citiesTitle;
+  document.getElementById('cities-subtitle').textContent = t.citiesSubtitle;
+  document.getElementById('features-title').textContent = t.featuresTitle;
+  document.getElementById('features-subtitle').textContent = t.featuresSubtitle;
+  document.getElementById('footer-text').textContent = t.footerText;
+
+  // Features
+  const fg = document.getElementById('features-grid');
+  fg.innerHTML = t.features.map(f => `
+    <div class="feature-card">
+      <div class="feature-icon">${f.icon}</div>
+      <h3>${f.title}</h3>
+      <p>${f.text}</p>
+    </div>
+  `).join('');
+
+  // Cities
+  const cg = document.getElementById('cities-grid');
+  cg.innerHTML = t.cities.map((c, i) => `
+    <div class="city-card" onclick="openModal(${i})">
+      <div class="city-img" style="background-image: url('${c.img}')">
+        <div class="city-badge">${c.region}</div>
+        <div class="city-name-overlay">${c.name}</div>
+      </div>
+      <div class="city-body">
+        <p class="city-desc">${c.desc}</p>
+        <div class="city-meta">
+          <span>🕐 ${c.hours}</span>
+          <span>👥 ${c.pop}</span>
+          <span style="margin-left:auto; color:var(--primary); font-weight:600;">${t.readMore}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Update active button
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+
+  document.documentElement.lang = lang;
+}
+
+function openModal(index) {
+  const t = translations[currentLang];
+  const c = t.cities[index];
+  document.getElementById('modal-img').style.backgroundImage = `url('${c.img}')`;
+  document.getElementById('modal-title').textContent = c.name;
+  document.getElementById('modal-desc').textContent = c.long;
+  document.getElementById('modal-h1').textContent = t.h1;
+  document.getElementById('modal-h2').textContent = t.h2;
+  document.getElementById('modal-season').textContent = c.season;
+  document.getElementById('modal-highlights').innerHTML = 
+    c.highlights.map(h => `<span class="highlight-tag">${h}</span>`).join('');
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Init
+applyLang('ru');
+</script>
+
+</body>
+</html>

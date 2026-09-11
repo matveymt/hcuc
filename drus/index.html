@@ -315,18 +315,42 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.15);
     transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
   .feature-card:hover {
-    background: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.2);
     transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  }
+
+  .feature-card:active {
+    transform: translateY(-2px) scale(0.98);
   }
 
   .feature-icon { font-size: 40px; margin-bottom: 14px; }
   .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
   .feature-card p { font-size: 14px; opacity: 0.85; }
 
-  /* Modal */
+  .feature-more {
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fbbf24;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.3s;
+  }
+
+  .feature-card:hover .feature-more {
+    gap: 12px;
+  }
+
+  /* Modal (shared) */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -425,6 +449,81 @@
     font-weight: 600;
   }
 
+  /* Feature modal */
+  .feature-modal { max-width: 620px; }
+
+  .feature-modal-header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    padding: 55px 30px 45px;
+    text-align: center;
+    color: white;
+    position: relative;
+    border-radius: 22px 22px 0 0;
+    overflow: hidden;
+  }
+
+  .feature-modal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+    animation: rotate 20s linear infinite;
+  }
+
+  .feature-modal-icon {
+    font-size: 76px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+    animation: pop 0.5s cubic-bezier(.2,.8,.2,1);
+    display: inline-block;
+  }
+
+  .feature-modal-title {
+    font-size: 28px;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-modal .modal-close {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    z-index: 20;
+  }
+
+  .feature-modal .modal-close:hover { background: white; color: var(--accent); }
+
+  .feature-modal-body {
+    padding: 30px;
+  }
+
+  .feature-modal-desc {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--dark);
+    margin-bottom: 24px;
+  }
+
+  .feature-examples-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .feature-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   /* Footer */
   footer {
     background: var(--dark);
@@ -450,6 +549,14 @@
     0%,100% { transform: translate(-50%, 0); }
     50% { transform: translate(-50%, 10px); }
   }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 
   /* Responsive */
   @media (max-width: 640px) {
@@ -460,6 +567,9 @@
     .city-name-overlay { font-size: 20px; }
     .modal-title { font-size: 24px; }
     .modal-body { padding: 22px; }
+    .feature-modal-icon { font-size: 60px; }
+    .feature-modal-title { font-size: 22px; }
+    .feature-modal-body { padding: 22px; }
   }
 </style>
 </head>
@@ -511,11 +621,11 @@
   </div>
 </section>
 
-<!-- Modal -->
+<!-- City Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-img" id="modal-img">
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal('modal')">✕</button>
       <div class="modal-title" id="modal-title"></div>
     </div>
     <div class="modal-body">
@@ -524,6 +634,22 @@
       <div class="modal-highlights" id="modal-highlights"></div>
       <h4 id="modal-h2"></h4>
       <p id="modal-season"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Feature Modal -->
+<div class="modal-overlay" id="featureModal">
+  <div class="modal feature-modal">
+    <div class="feature-modal-header">
+      <button class="modal-close" onclick="closeModal('featureModal')">✕</button>
+      <div class="feature-modal-icon" id="feature-modal-icon"></div>
+      <div class="feature-modal-title" id="feature-modal-title"></div>
+    </div>
+    <div class="feature-modal-body">
+      <p class="feature-modal-desc" id="feature-modal-desc"></p>
+      <span class="feature-examples-title" id="feature-examples-title"></span>
+      <div class="feature-examples" id="feature-examples"></div>
     </div>
   </div>
 </div>
@@ -546,16 +672,42 @@ const translations = {
     citiesTitle: 'Города России',
     citiesSubtitle: 'Каждый город — это отдельная вселенная со своей историей, культурой и характером.',
     featuresTitle: 'Почему стоит поехать',
-    featuresSubtitle: 'Россия — это страна контрастов и открытий в любое время года',
+    featuresSubtitle: 'Россия — это страна контрастов и открытий в любое время года. Нажмите на карточку, чтобы узнать больше.',
     footerText: 'Исследуй Россию — 11 часовых поясов, 85 регионов, тысячи чудес.',
     h1: 'Достопримечательности',
     h2: 'Лучшее время для посещения',
     readMore: 'Подробнее →',
+    clickHint: 'Нажмите, чтобы узнать больше',
+    examplesTitle: 'Примеры и места',
     features: [
-      { icon: '🏛️', title: 'Богатая история', text: 'Более 1000 лет истории, кремли, монастыри и дворцы.' },
-      { icon: '🏔️', title: 'Природа', text: 'От Байкала до Эльбруса — уникальные природные ландшафты.' },
-      { icon: '🎭', title: 'Культура', text: 'Балет, театры, музеи мирового уровня и гостеприимство.' },
-      { icon: '🍽️', title: 'Кухня', text: 'От сибирских пельменей до кавказских блюд и морепродуктов.' }
+      { 
+        icon: '🏛️', 
+        title: 'Богатая история', 
+        text: 'Более 1000 лет истории, кремли, монастыри и дворцы.',
+        long: 'Россия — страна с тысячелетней историей, которая начинается от древних славянских племён и Киевской Руси. Здесь вы найдёте средневековые кремли, величественные соборы, императорские дворцы и памятники советской эпохи. Каждый регион хранит свою уникальную историю — от основания Москвы в 1147 году до освоения Сибири и космических побед XX века.',
+        examples: ['Московский Кремль', 'Петропавловская крепость', 'Троице-Сергиева лавра', 'Коломенское', 'Царское Село', 'Казанский кремль']
+      },
+      { 
+        icon: '🏔️', 
+        title: 'Природа', 
+        text: 'От Байкала до Эльбруса — уникальные природные ландшафты.',
+        long: 'Природа России поражает своим разнообразием: от арктических льдов до субтропиков Сочи, от сибирской тайги до кавказских вершин. Здесь находится самое глубокое озеро мира, самая длинная река Европы и высочайшая гора континента. Россия — одна из немногих стран, где можно увидеть белых медведей, амурских тигров и камчатских вулканов в их естественной среде.',
+        examples: ['Озеро Байкал', 'Эльбрус', 'Камчатка', 'Алтай', 'Карелия', 'Ленские столбы', 'Валдай']
+      },
+      { 
+        icon: '🎭', 
+        title: 'Культура', 
+        text: 'Балет, театры, музеи мирового уровня и гостеприимство.',
+        long: 'Российская культура подарила миру Толстого, Достоевского, Чайковского и Кандинского. Здесь находятся одни из лучших театров и музеев планеты: Большой театр, Мариинский, Эрмитаж и Третьяковская галерея. Россия — это страна классического балета, великой литературы, знаменитой русской иконописи и гостеприимных традиций.',
+        examples: ['Большой театр', 'Мариинский театр', 'Эрмитаж', 'Третьяковская галерея', 'МХТ Чехова', 'Русский музей']
+      },
+      { 
+        icon: '🍽️', 
+        title: 'Кухня', 
+        text: 'От сибирских пельменей до кавказских блюд и морепродуктов.',
+        long: 'Русская кухня — это сытные супы, ароматная выпечка и разнообразие региональных specialties. Здесь можно попробовать пельмени с таёжными травами, кавказский шашлык, камчатского краба, астраханскую икру и знаменитый борщ. Каждый регион России гордится своими кулинарными традициями — от сибирских солений до дагестанских хинкалов и татарского чак-чака.',
+        examples: ['Пельмени', 'Борщ', 'Блины', 'Шашлык', 'Красная икра', 'Окрошка', 'Чак-чак', 'Хинкал']
+      }
     ],
     cities: [
       {
@@ -633,16 +785,42 @@ const translations = {
     citiesTitle: 'Cities of Russia',
     citiesSubtitle: 'Every city is a separate universe with its own history, culture and character.',
     featuresTitle: 'Why You Should Visit',
-    featuresSubtitle: 'Russia is a country of contrasts and discoveries in any season',
+    featuresSubtitle: 'Russia is a country of contrasts and discoveries in any season. Click a card to learn more.',
     footerText: 'Explore Russia — 11 time zones, 85 regions, thousands of wonders.',
     h1: 'Attractions',
     h2: 'Best Time to Visit',
     readMore: 'Read more →',
+    clickHint: 'Click to learn more',
+    examplesTitle: 'Examples & Places',
     features: [
-      { icon: '🏛️', title: 'Rich History', text: 'Over 1000 years of history, kremlins, monasteries and palaces.' },
-      { icon: '🏔️', title: 'Nature', text: 'From Baikal to Elbrus — unique natural landscapes.' },
-      { icon: '🎭', title: 'Culture', text: 'World-class ballet, theaters, museums and hospitality.' },
-      { icon: '🍽️', title: 'Cuisine', text: 'From Siberian pelmeni to Caucasian dishes and seafood.' }
+      { 
+        icon: '🏛️', 
+        title: 'Rich History', 
+        text: 'Over 1000 years of history, kremlins, monasteries and palaces.',
+        long: 'Russia is a country with a thousand-year history, starting from ancient Slavic tribes and Kievan Rus. Here you will find medieval kremlins, majestic cathedrals, imperial palaces and monuments of the Soviet era. Every region keeps its own unique history — from the founding of Moscow in 1147 to the exploration of Siberia and the space victories of the 20th century.',
+        examples: ['Moscow Kremlin', 'Peter and Paul Fortress', 'Trinity Lavra of St. Sergius', 'Kolomenskoye', 'Tsarskoye Selo', 'Kazan Kremlin']
+      },
+      { 
+        icon: '🏔️', 
+        title: 'Nature', 
+        text: 'From Baikal to Elbrus — unique natural landscapes.',
+        long: 'Russia\'s nature amazes with its diversity: from Arctic ice to the subtropics of Sochi, from Siberian taiga to the Caucasus peaks. Here is the deepest lake in the world, the longest river in Europe and the highest mountain of the continent. Russia is one of the few countries where you can see polar bears, Amur tigers and Kamchatka volcanoes in their natural environment.',
+        examples: ['Lake Baikal', 'Elbrus', 'Kamchatka', 'Altai', 'Karelia', 'Lena Pillars', 'Valdai']
+      },
+      { 
+        icon: '🎭', 
+        title: 'Culture', 
+        text: 'World-class ballet, theaters, museums and hospitality.',
+        long: 'Russian culture gave the world Tolstoy, Dostoevsky, Tchaikovsky and Kandinsky. Here are some of the best theaters and museums on the planet: the Bolshoi Theatre, Mariinsky Theatre, the Hermitage and the Tretyakov Gallery. Russia is a country of classical ballet, great literature, famous Russian icon painting and hospitable traditions.',
+        examples: ['Bolshoi Theatre', 'Mariinsky Theatre', 'Hermitage', 'Tretyakov Gallery', 'Moscow Art Theatre', 'Russian Museum']
+      },
+      { 
+        icon: '🍽️', 
+        title: 'Cuisine', 
+        text: 'From Siberian pelmeni to Caucasian dishes and seafood.',
+        long: 'Russian cuisine is hearty soups, aromatic pastries and a variety of regional specialties. Here you can try pelmeni with taiga herbs, Caucasian shashlik, Kamchatka crab, Astrakhan caviar and the famous borscht. Every region of Russia is proud of its culinary traditions — from Siberian pickles to Dagestani khinkal and Tatar chak-chak.',
+        examples: ['Pelmeni', 'Borscht', 'Blini', 'Shashlik', 'Red caviar', 'Okroshka', 'Chak-chak', 'Khinkal']
+      }
     ],
     cities: [
       {
@@ -720,16 +898,42 @@ const translations = {
     citiesTitle: '俄罗斯城市',
     citiesSubtitle: '每座城市都是一个独立的宇宙，拥有自己的历史、文化和性格。',
     featuresTitle: '为什么要去',
-    featuresSubtitle: '俄罗斯是一个四季都充满对比和发现的国家',
+    featuresSubtitle: '俄罗斯是一个四季都充满对比和发现的国家。点击卡片了解更多。',
     footerText: '探索俄罗斯——11个时区、85个地区、数千个奇迹。',
     h1: '名胜古迹',
     h2: '最佳旅游时间',
     readMore: '了解更多 →',
+    clickHint: '点击了解更多',
+    examplesTitle: '示例与地点',
     features: [
-      { icon: '🏛️', title: '悠久历史', text: '千年历史，克里姆林宫、修道院和宫殿。' },
-      { icon: '🏔️', title: '自然风光', text: '从贝加尔湖到厄尔布鲁士山——独特的自然景观。' },
-      { icon: '🎭', title: '文化', text: '世界级芭蕾舞、剧院、博物馆和热情好客。' },
-      { icon: '🍽️', title: '美食', text: '从西伯利亚饺子到高加索菜肴和海鲜。' }
+      { 
+        icon: '🏛️', 
+        title: '悠久历史', 
+        text: '千年历史，克里姆林宫、修道院和宫殿。',
+        long: '俄罗斯是一个拥有千年历史的国家，从古代斯拉夫部落和基辅罗斯开始。这里有中世纪的克里姆林宫、宏伟的大教堂、帝国宫殿和苏联时代的纪念碑。每个地区都保留着自己独特的历史——从1147年莫斯科的建立，到西伯利亚的开发和20世纪的太空胜利。',
+        examples: ['莫斯科克里姆林宫', '彼得保罗要塞', '圣三一修道院', '科洛缅斯科耶', '皇村', '喀山克里姆林宫']
+      },
+      { 
+        icon: '🏔️', 
+        title: '自然风光', 
+        text: '从贝加尔湖到厄尔布鲁士山——独特的自然景观。',
+        long: '俄罗斯的自然风光以其多样性而令人惊叹：从北极冰原到索契的亚热带，从西伯利亚针叶林到高加索山峰。这里有世界上最深的湖泊、欧洲最长的河流和大陆最高的山峰。俄罗斯是少数几个可以在自然环境中看到北极熊、东北虎和堪察加火山的地方之一。',
+        examples: ['贝加尔湖', '厄尔布鲁士山', '堪察加', '阿尔泰', '卡累利阿', '勒拿柱', '瓦尔代']
+      },
+      { 
+        icon: '🎭', 
+        title: '文化', 
+        text: '世界级芭蕾舞、剧院、博物馆和热情好客。',
+        long: '俄罗斯文化为世界贡献了托尔斯泰、陀思妥耶夫斯基、柴可夫斯基和康定斯基。这里有世界上最好的剧院和博物馆：大剧院、马林斯基剧院、艾尔米塔什博物馆和特列季亚科夫画廊。俄罗斯是古典芭蕾、伟大文学、著名的俄罗斯圣像画和热情好客传统的国家。',
+        examples: ['大剧院', '马林斯基剧院', '艾尔米塔什博物馆', '特列季亚科夫画廊', '契诃夫莫斯科艺术剧院', '俄罗斯博物馆']
+      },
+      { 
+        icon: '🍽️', 
+        title: '美食', 
+        text: '从西伯利亚饺子到高加索菜肴和海鲜。',
+        long: '俄罗斯美食包括丰盛的汤、香气四溢的糕点和各种地区特色菜。在这里可以品尝带有泰加林草药的饺子、高加索烤肉串、堪察加蟹、阿斯特拉罕鱼子酱和著名的红菜汤。俄罗斯每个地区都以其烹饪传统为傲——从西伯利亚泡菜到印古什的饺子汤和鞑靼的恰克恰克。',
+        examples: ['饺子', '红菜汤', '薄饼', '烤肉串', '红鱼子酱', '冷汤', '恰克恰克', '饺子汤']
+      }
     ],
     cities: [
       {
@@ -807,16 +1011,42 @@ const translations = {
     citiesTitle: 'Ciudades de Rusia',
     citiesSubtitle: 'Cada ciudad es un universo aparte con su propia historia, cultura y carácter.',
     featuresTitle: 'Por Qué Visitarla',
-    featuresSubtitle: 'Rusia es un país de contrastes y descubrimientos en cualquier estación',
+    featuresSubtitle: 'Rusia es un país de contrastes y descubrimientos en cualquier estación. Haz clic en una tarjeta para saber más.',
     footerText: 'Explora Rusia — 11 husos horarios, 85 regiones, miles de maravillas.',
     h1: 'Atracciones',
     h2: 'Mejor Época para Visitar',
     readMore: 'Leer más →',
+    clickHint: 'Haz clic para saber más',
+    examplesTitle: 'Ejemplos y Lugares',
     features: [
-      { icon: '🏛️', title: 'Rica Historia', text: 'Más de 1000 años de historia, kremlins, monasterios y palacios.' },
-      { icon: '🏔️', title: 'Naturaleza', text: 'Desde el Baikal hasta el Elbrús — paisajes únicos.' },
-      { icon: '🎭', title: 'Cultura', text: 'Ballet, teatros, museos de clase mundial y hospitalidad.' },
-      { icon: '🍽️', title: 'Cocina', text: 'Desde pelmeni siberianos hasta platos del Cáucaso y mariscos.' }
+      { 
+        icon: '🏛️', 
+        title: 'Rica Historia', 
+        text: 'Más de 1000 años de historia, kremlins, monasterios y palacios.',
+        long: 'Rusia es un país con mil años de historia, desde las antiguas tribus eslavas y la Rus de Kiev. Aquí encontrarás kremlins medievales, catedrales majestuosas, palacios imperiales y monumentos de la era soviética. Cada región guarda su propia historia única — desde la fundación de Moscú en 1147 hasta la exploración de Siberia y las victorias espaciales del siglo XX.',
+        examples: ['Kremlin de Moscú', 'Fortaleza de Pedro y Pablo', 'Laura de la Trinidad', 'Kolomenskoye', 'Tsárskoye Seló', 'Kremlin de Kazán']
+      },
+      { 
+        icon: '🏔️', 
+        title: 'Naturaleza', 
+        text: 'Desde el Baikal hasta el Elbrús — paisajes únicos.',
+        long: 'La naturaleza de Rusia asombra por su diversidad: desde el hielo del Ártico hasta los subtrópicos de Sochi, desde la taiga siberiana hasta los picos del Cáucaso. Aquí se encuentra el lago más profundo del mundo, el río más largo de Europa y la montaña más alta del continente. Rusia es uno de los pocos países donde puedes ver osos polares, tigres del Amur y volcanes de Kamchatka en su entorno natural.',
+        examples: ['Lago Baikal', 'Elbrús', 'Kamchatka', 'Altái', 'Carelia', 'Columnas del Lena', 'Valdái']
+      },
+      { 
+        icon: '🎭', 
+        title: 'Cultura', 
+        text: 'Ballet, teatros, museos de clase mundial y hospitalidad.',
+        long: 'La cultura rusa dio al mundo a Tolstói, Dostoievski, Chaikovski y Kandinsky. Aquí están algunos de los mejores teatros y museos del planeta: el Teatro Bolshói, el Mariinski, el Hermitage y la Galería Tretiakov. Rusia es un país de ballet clásico, gran literatura, famosa pintura de iconos rusos y tradiciones hospitalarias.',
+        examples: ['Teatro Bolshói', 'Teatro Mariinski', 'Hermitage', 'Galería Tretiakov', 'Teatro de Arte de Moscú', 'Museo Ruso']
+      },
+      { 
+        icon: '🍽️', 
+        title: 'Cocina', 
+        text: 'Desde pelmeni siberianos hasta platos del Cáucaso y mariscos.',
+        long: 'La cocina rusa son sopas abundantes, repostería aromática y una variedad de especialidades regionales. Aquí puedes probar pelmeni con hierbas de la taiga, shashlik del Cáucaso, cangrejo de Kamchatka, caviar de Astracán y el famoso borscht. Cada región de Rusia se enorgullece de sus tradiciones culinarias — desde los encurtidos siberianos hasta el khinkal daguestaní y el chak-chak tártaro.',
+        examples: ['Pelmeni', 'Borscht', 'Blini', 'Shashlik', 'Caviar rojo', 'Okroshka', 'Chak-chak', 'Khinkal']
+      }
     ],
     cities: [
       {
@@ -905,13 +1135,14 @@ function applyLang(lang) {
   document.getElementById('features-subtitle').textContent = t.featuresSubtitle;
   document.getElementById('footer-text').textContent = t.footerText;
 
-  // Features
+  // Features — теперь кликабельные!
   const fg = document.getElementById('features-grid');
-  fg.innerHTML = t.features.map(f => `
-    <div class="feature-card">
+  fg.innerHTML = t.features.map((f, i) => `
+    <div class="feature-card" onclick="openFeatureModal(${i})" role="button" tabindex="0">
       <div class="feature-icon">${f.icon}</div>
       <h3>${f.title}</h3>
       <p>${f.text}</p>
+      <div class="feature-more">${t.readMore}</div>
     </div>
   `).join('');
 
@@ -942,6 +1173,7 @@ function applyLang(lang) {
   document.documentElement.lang = lang;
 }
 
+/* --- City Modal --- */
 function openModal(index) {
   const t = translations[currentLang];
   const c = t.cities[index];
@@ -957,30 +1189,64 @@ function openModal(index) {
   document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('active');
+/* --- Feature Modal --- */
+function openFeatureModal(index) {
+  const t = translations[currentLang];
+  const f = t.features[index];
+  document.getElementById('feature-modal-icon').textContent = f.icon;
+  document.getElementById('feature-modal-title').textContent = f.title;
+  document.getElementById('feature-modal-desc').textContent = f.long;
+  document.getElementById('feature-examples-title').textContent = t.examplesTitle;
+  document.getElementById('feature-examples').innerHTML = 
+    f.examples.map(e => `<span class="highlight-tag">${e}</span>`).join('');
+  document.getElementById('featureModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+/* --- Close any modal by ID --- */
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
   document.body.style.overflow = '';
 }
 
+/* Click on overlay background to close */
 document.getElementById('modal').addEventListener('click', e => {
-  if (e.target.id === 'modal') closeModal();
+  if (e.target.id === 'modal') closeModal('modal');
+});
+document.getElementById('featureModal').addEventListener('click', e => {
+  if (e.target.id === 'featureModal') closeModal('featureModal');
 });
 
+/* ESC key */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') {
+    closeModal('modal');
+    closeModal('featureModal');
+  }
 });
 
+/* Language buttons */
 document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.addEventListener('click', () => applyLang(btn.dataset.lang));
 });
 
-// Smooth scroll
+/* Smooth scroll */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
     const el = document.querySelector(a.getAttribute('href'));
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+});
+
+/* Keyboard support for feature cards */
+document.getElementById('features-grid').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    if (e.target.classList.contains('feature-card')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  }
 });
 
 // Init

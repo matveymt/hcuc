@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Russia — Путешествия по России</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#" class="logo">
+      <div class="logo-icon">🌍</div>
+      <span id="logo-text">Открой Россию</span>
+    </a>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="ru"><span class="flag">🇷🇺</span>RU</button>
+      <button class="lang-btn" data-lang="en"><span class="flag">🇬🇧</span>EN</button>
+      <button class="lang-btn" data-lang="zh"><span class="flag">🇨🇳</span>中文</button>
+      <button class="lang-btn" data-lang="es"><span class="flag">🇪🇸</span>ES</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <h1 id="hero-title"></h1>
+    <p id="hero-subtitle"></p>
+    <div class="hero-buttons">
+      <a href="#cities" class="btn btn-primary" id="hero-btn1"></a>
+      <a href="#features" class="btn btn-outline" id="hero-btn2"></a>
+    </div>
+  </div>
+  <div class="scroll-hint">↓</div>
+</div>
+
+<section id="cities">
+  <div class="container">
+    <h2 class="section-title" id="cities-title"></h2>
+    <p class="section-subtitle" id="cities-subtitle"></p>
+    <div class="cities-grid" id="cities-grid"></div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title" id="features-title"></h2>
+    <p class="section-subtitle" id="features-subtitle"></p>
+    <div class="features-grid" id="features-grid"></div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-img" id="modal-img">
+      <button class="modal-close" onclick="closeModal('modal')">✕</button>
+      <div class="modal-title" id="modal-title"></div>
+    </div>
+    <div class="modal-body">
+      <p id="modal-desc"></p>
+      <h4>📍 <span id="modal-h1"></span></h4>
+      <div class="hint-line" id="modal-highlights-hint"></div>
+      <div class="modal-highlights" id="modal-highlights"></div>
+      <h4>🌐 <span id="modal-pano-title"></span></h4>
+      <div class="hint-line" id="modal-pano-hint"></div>
+      <div class="pano-wrap">
+        <div class="pano-badge-lg" id="modal-pano-badge">360° PANORAMA</div>
+        <iframe id="modal-pano-iframe" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <h4>🗓️ <span id="modal-h2"></span></h4>
+      <p id="modal-season"></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="featureModal">
+  <div class="modal feature-modal">
+    <div class="feature-modal-header">
+      <button class="modal-close" onclick="closeModal('featureModal')">✕</button>
+      <div class="feature-modal-icon" id="feature-modal-icon"></div>
+      <div class="feature-modal-title" id="feature-modal-title"></div>
+    </div>
+    <div class="feature-modal-body">
+      <p class="feature-modal-desc" id="feature-modal-desc"></p>
+      <span class="feature-examples-title" id="feature-examples-title"></span>
+      <div class="hint-line" id="feature-examples-hint"></div>
+      <div class="feature-examples" id="feature-examples"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo"><div class="logo-icon">🌍</div><span id="footer-logo"></span></div>
+  <p id="footer-text"></p>
+  <p style="opacity:0.5; margin-top:16px;">© 2026 Discover Russia</p>
+</footer>
+
+<script src="translations.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
